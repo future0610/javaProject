@@ -10,12 +10,13 @@ public class ticTacToe {
     static String DRAW = "draw";
     private static String[][] board = null;
 
-    private String[][] initialBoard;
+    String[][] initialBoard;
 
     private Method player1;
     private Method player2;
     private Method currentPlayer;
     private String currentPieces;
+    private boolean setTurn = false;
 
     public ticTacToe() {
         this(ticTacToe.drawBoard, ticTacToe.board);
@@ -30,6 +31,7 @@ public class ticTacToe {
         String[][] board의 원소로서 X, O가 아닌 값이 있거나,
         O 또는 X의 수가 X 또는 O의 수의 차이가 2 이상일 때 예외를 발생시켜 프로그램을 종효시킨다.
         */
+        System.out.println("==================================");
         String[][] boardState = {{empty, empty, empty},
                                  {empty, empty, empty},
                                  {empty, empty, empty}};
@@ -55,12 +57,12 @@ public class ticTacToe {
                 }
                 System.out.printf("%d %d\n", numOpponent, numPlayer);
                 if (disable == 0) {
-                    this.initialBoard = board;
+                    this.initialBoard = this.copyBoard(board);
                 } else {
                     throw new Exception("X, O가 아닌 값이 포함되어있습니다.");
                 }
                 if ((numOpponent - numPlayer) * (numOpponent - numPlayer) < 4) {
-                    this.initialBoard = board;
+                    this.initialBoard = this.copyBoard(board);
                 } else {
                     throw new Exception("가능하지 않은 초기 보드 상태입니다.");
                 }
@@ -77,6 +79,14 @@ public class ticTacToe {
 
     public String[][] getBoard() {
         return ticTacToe.board;
+    }
+
+    public String[][] copyBoard(String[][] board) {
+        String[][] result = new String[3][3];
+        for (int i = 0; i < 3; i++) {
+            result[i] = board[i].clone();
+        }
+        return result;
     }
 
     /*
@@ -212,7 +222,7 @@ public class ticTacToe {
         }
     }
 
-    private void draw() {
+    public void draw() {
         // 게임판을 그려주는 메서드
         if (ticTacToe.drawBoard) {
             System.out.print("|");
@@ -246,8 +256,11 @@ public class ticTacToe {
         /*
         게임판을 초기화시키는 메서드
          */
-        ticTacToe.board = this.initialBoard;
-        this.currentPieces = this.nextPlayer();
+        ticTacToe.board = this.copyBoard(this.initialBoard);
+        if (!this.setTurn) {
+            this.currentPieces = this.nextPlayer();
+            this.setTurn = true;
+        }
     }
 
     private String nextPlayer(){
