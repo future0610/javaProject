@@ -10,9 +10,12 @@ public class Main {
         String p = ticTacToe.player;
         String o = ticTacToe.opponent;
 
-        String[][] original = {{e, e, e},
+        String[][] original = {{p, e, e},
                                  {e, e, e},
                                  {e, e, e}};
+//        ticTacToe game = new ticTacToe(original);
+//        game.reset();
+//        game.draw();
 //        String[][] result = new String[3][3];
 //        for (int i = 0; i < 3; i++) {
 //            result[i] = original[i].clone();
@@ -25,6 +28,7 @@ public class Main {
 
         AI ai = new AI();
         ai.method(original);
+
 //        display disp = new display();
 //        System.out.println(disp.startButton.doClick());
 //        if () {

@@ -3,13 +3,15 @@ package TicTacToe;
 import java.util.*;
 
 public class ticTacToe {
-    private static boolean drawBoard = true;
+    private static boolean drawBoardDefault = true;
     static String player = "X";
     static String opponent = "O";
     static String empty = " ";
     static String DRAW = "draw";
-    private static String[][] board = null;
+    private static String[][] boardDefault = null;
 
+    private boolean drawBoard;
+    private String[][] board = null;
     String[][] initialBoard;
 
     private Method player1;
@@ -19,19 +21,22 @@ public class ticTacToe {
     private boolean setTurn = false;
 
     public ticTacToe() {
-        this(ticTacToe.drawBoard, ticTacToe.board);
+        this(drawBoardDefault, boardDefault);
     }
     public ticTacToe(boolean draw) {
-        this(draw, ticTacToe.board);
+        this(draw, boardDefault);
+    }
+    public ticTacToe(String[][] board) {
+        this(drawBoardDefault, board);
     }
     public ticTacToe(boolean draw, String[][] board) {
+        this.drawBoard = draw;
         /*
         게임 보드를 화면에 표시할 것인지 나타내는 draw(default:true), 현재 보드의 상태인 board를 입력받는다.
         board로 null을 받으면 모든 칸이 비어있는 보드를 초기 보드 상태로 설정한다.
         String[][] board의 원소로서 X, O가 아닌 값이 있거나,
         O 또는 X의 수가 X 또는 O의 수의 차이가 2 이상일 때 예외를 발생시켜 프로그램을 종효시킨다.
         */
-        System.out.println("==================================");
         String[][] boardState = {{empty, empty, empty},
                                  {empty, empty, empty},
                                  {empty, empty, empty}};
@@ -55,14 +60,13 @@ public class ticTacToe {
                         }
                     }
                 }
-                System.out.printf("%d %d\n", numOpponent, numPlayer);
                 if (disable == 0) {
-                    this.initialBoard = this.copyBoard(board);
+                    this.initialBoard = ticTacToe.copyBoard(board);
                 } else {
                     throw new Exception("X, O가 아닌 값이 포함되어있습니다.");
                 }
                 if ((numOpponent - numPlayer) * (numOpponent - numPlayer) < 4) {
-                    this.initialBoard = this.copyBoard(board);
+                    this.initialBoard = ticTacToe.copyBoard(board);
                 } else {
                     throw new Exception("가능하지 않은 초기 보드 상태입니다.");
                 }
@@ -72,21 +76,9 @@ public class ticTacToe {
             } finally {
             }
         }
-        if (draw == false) {
-            ticTacToe.drawBoard = false;
+        if (!draw) {
+            this.drawBoard = false;
         }
-    }
-
-    public String[][] getBoard() {
-        return ticTacToe.board;
-    }
-
-    public String[][] copyBoard(String[][] board) {
-        String[][] result = new String[3][3];
-        for (int i = 0; i < 3; i++) {
-            result[i] = board[i].clone();
-        }
-        return result;
     }
 
     /*
@@ -104,7 +96,7 @@ public class ticTacToe {
             for (List<List> set : this.winCase()) {
                 int winning = 0;
                 for (List<Integer> loc : set) {
-                    if (ticTacToe.board[loc.get(0)][loc.get(1)].equals(players)) {
+                    if (this.board[loc.get(0)][loc.get(1)].equals(players)) {
                         winning++;
                     }
                 }
@@ -114,7 +106,7 @@ public class ticTacToe {
             }
         }
         int winning = 0;
-        for (String[] col : ticTacToe.board) {
+        for (String[] col : this.board) {
             for (String item : col) {
                 if (item.equals(this.empty)) {
                     winning++;
@@ -199,7 +191,7 @@ public class ticTacToe {
             this.draw();
             int[] loc;
             System.out.print("위치를 입력하세요: ");
-            loc = this.currentPlayer.method(ticTacToe.board);
+            loc = this.currentPlayer.method(this.board);
             this.action(loc);
             switchTurn();
             winner = this.evaluate();
@@ -213,8 +205,8 @@ public class ticTacToe {
         // 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드
         int x = loc[0];
         int y = loc[1];
-        if (ticTacToe.board[x][y].equals(ticTacToe.empty)) {
-            ticTacToe.board[x][y] = this.currentPieces;
+        if (this.board[x][y].equals(ticTacToe.empty)) {
+            this.board[x][y] = this.currentPieces;
         }
         else {
             System.out.println("비어 있지 않은 자리입니다.");
@@ -224,7 +216,7 @@ public class ticTacToe {
 
     public void draw() {
         // 게임판을 그려주는 메서드
-        if (ticTacToe.drawBoard) {
+        if (this.drawBoard) {
             System.out.print("|");
             for (int j = 0; j < 3; j++) {
                 System.out.print("---|");
@@ -233,7 +225,7 @@ public class ticTacToe {
             for (int i = 0; i < 3; i++) {
                 System.out.print("|");
                 for (int j = 0; j < 3; j++) {
-                    System.out.printf(" %s ", ticTacToe.board[i][j]);
+                    System.out.printf(" %s ", this.board[i][j]);
                     System.out.print("|");
                 }
                 System.out.println();
@@ -256,7 +248,7 @@ public class ticTacToe {
         /*
         게임판을 초기화시키는 메서드
          */
-        ticTacToe.board = this.copyBoard(this.initialBoard);
+        this.board = ticTacToe.copyBoard(this.initialBoard);
         if (!this.setTurn) {
             this.currentPieces = this.nextPlayer();
             this.setTurn = true;
@@ -273,10 +265,10 @@ public class ticTacToe {
         int numOpponent = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (ticTacToe.board[i][j].equals(ticTacToe.player)) {
+                if (this.board[i][j].equals(ticTacToe.player)) {
                     numPlayer++;
                 }
-                else if (ticTacToe.board[i][j].equals(ticTacToe.opponent)){
+                else if (this.board[i][j].equals(ticTacToe.opponent)){
                     numOpponent++;
                 }
             }
@@ -316,5 +308,35 @@ public class ticTacToe {
             this.currentPlayer = this.player2;
             return ticTacToe.opponent;
         }
+    }
+
+    /*
+    ====================
+    내장 함수
+    ====================
+    */
+
+    public static int[] randomAction() {
+        Random random = new Random();
+        int x, y;
+        int[] loc = new int[2];
+
+        x = random.nextInt(3);
+        y = random.nextInt(3);
+        loc[0] = x;
+        loc[1] = y;
+        return loc;
+    }
+
+    public String[][] getBoard() {
+        return this.board;
+    }
+
+    public static String[][] copyBoard(String[][] board) {
+        String[][] result = new String[3][3];
+        for (int i = 0; i < 3; i++) {
+            System.arraycopy(board[i], 0, result[i], 0, board[i].length);
+        }
+        return result;
     }
 }

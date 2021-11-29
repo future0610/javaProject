@@ -41,10 +41,13 @@ class inference{
         }
         return result;
     }
-    public void monteCarlo() {
+    public void monteCarlo(String[][] board) {
         String winner = null;
         while (winner == null){
-            
+            ticTacToe gM = new ticTacToe(false, board);
+            int[] loc = ticTacToe.randomAction();
+            gM.reset();
+            gM.action(loc);
         }
     }
 }
