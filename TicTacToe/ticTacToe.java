@@ -18,7 +18,6 @@ public class ticTacToe {
     private Method player2;
     private Method currentPlayer;
     private String currentPieces;
-    private boolean setTurn = false;
 
     public ticTacToe() {
         this(drawBoardDefault, boardDefault);
@@ -92,7 +91,6 @@ public class ticTacToe {
         playerList.add(ticTacToe.player);
         playerList.add(ticTacToe.opponent);
         for (String players : playerList) {
-            int ret = 0;
             for (List<List> set : this.winCase()) {
                 int winning = 0;
                 for (List<Integer> loc : set) {
@@ -191,6 +189,7 @@ public class ticTacToe {
             this.draw();
             int[] loc;
             System.out.print("위치를 입력하세요: ");
+            this.currentPlayer.setPlayer(this.currentPieces);
             loc = this.currentPlayer.method(this.board);
             this.action(loc);
             switchTurn();
@@ -201,6 +200,18 @@ public class ticTacToe {
         return winner;
     }
 
+    public void action(String piece, int[] loc) {
+        // 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드
+        int x = loc[0];
+        int y = loc[1];
+        if (this.board[x][y].equals(ticTacToe.empty)) {
+            this.board[x][y] = piece;
+        }
+        else {
+            System.out.println("비어 있지 않은 자리입니다.");
+            this.switchTurn();
+        }
+    }
     public void action(int[] loc) {
         // 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드
         int x = loc[0];
@@ -243,15 +254,27 @@ public class ticTacToe {
     게임 순서를 정할 때 사용
     ====================
     */
-    
+
+    public void reset(String player) {
+        /*
+        게임판을 초기화시키는 메서드
+        */
+        this.board = ticTacToe.copyBoard(this.initialBoard);
+        this.currentPieces = player;
+        if (player.equals(ticTacToe.player)) {
+            this.currentPlayer = this.player1;
+        }
+        else if (player.equals(ticTacToe.player)) {
+            this.currentPlayer = this.player2;
+        }
+    }
     public void reset() {
         /*
         게임판을 초기화시키는 메서드
-         */
+        */
         this.board = ticTacToe.copyBoard(this.initialBoard);
-        if (!this.setTurn) {
+        if (this.currentPieces == null) {
             this.currentPieces = this.nextPlayer();
-            this.setTurn = true;
         }
     }
 
@@ -310,6 +333,10 @@ public class ticTacToe {
         }
     }
 
+    public void finalize() {
+
+    }
+
     /*
     ====================
     내장 함수
@@ -317,6 +344,7 @@ public class ticTacToe {
     */
 
     public static int[] randomAction() {
+        // 말의 위치를 임의로 정하는 메서드
         Random random = new Random();
         int x, y;
         int[] loc = new int[2];
@@ -325,6 +353,7 @@ public class ticTacToe {
         y = random.nextInt(3);
         loc[0] = x;
         loc[1] = y;
+
         return loc;
     }
 
@@ -338,5 +367,14 @@ public class ticTacToe {
             System.arraycopy(board[i], 0, result[i], 0, board[i].length);
         }
         return result;
+    }
+
+    public static String switchPlayer(String player) {
+        String currentPlayer = ticTacToe.player;
+        if (player.equals(ticTacToe.player)) {
+            currentPlayer = ticTacToe.opponent;
+        }
+
+        return currentPlayer;
     }
 }

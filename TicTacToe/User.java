@@ -3,7 +3,7 @@ package TicTacToe;
 import java.util.Scanner;
 
 public class User implements Method{
-    String playerPieces;
+    private String playerPieces;
     public User() {
 
     }
@@ -19,5 +19,10 @@ public class User implements Method{
         loc[0] = x;
         loc[1] = y;
         return loc;
+    }
+
+    @Override
+    public void setPlayer(String player) {
+        this.playerPieces = player;
     }
 }
