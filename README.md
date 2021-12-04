@@ -19,6 +19,6 @@
 <ul>
   <li>alphaNode, betaNode, inference 클래스 구현</li>
   <li>MonteCarlo 방식 구현</li>
-  <li>오픈소스로 구한 코드를 수정하 GUI 작업 시작</li>
+  <li>오픈소스로 구한 코드를 수정하여 GUI 작업 시작</li>
 </ul>
 </pre>
