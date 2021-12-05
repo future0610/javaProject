@@ -200,18 +200,6 @@ public class ticTacToe {
         return winner;
     }
 
-    public void action(String piece, int[] loc) {
-        // 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드
-        int x = loc[0];
-        int y = loc[1];
-        if (this.board[x][y].equals(ticTacToe.empty)) {
-            this.board[x][y] = piece;
-        }
-        else {
-            System.out.println("비어 있지 않은 자리입니다.");
-            this.switchTurn();
-        }
-    }
     public void action(int[] loc) {
         // 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드
         int x = loc[0];
@@ -331,10 +319,6 @@ public class ticTacToe {
             this.currentPlayer = this.player2;
             return ticTacToe.opponent;
         }
-    }
-
-    public void finalize() {
-
     }
 
     /*

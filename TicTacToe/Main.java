@@ -10,22 +10,28 @@ public class Main {
         String p = ticTacToe.player;
         String o = ticTacToe.opponent;
 
-        String[][] original = {{p, o, o},
-                                 {e, e, e},
-                                 {e, e, p}};
+        String[][] original = {{o, o, p},
+                                 {e, p, o},
+                                 {e, e, e}};
+
+//        node n = new node();
+//        System.out.println(n.monteCarlo(original, p));
 
         AI ai = new AI();
         ai.setPlayer(p);
-        ai.method(original);
-
+        int[] loc = ai.method(original);
+        System.out.printf("%d %d\n", loc[0], loc[1]);
+//
 //        display disp = new display();
-
+//
 
 //        String winner;
-//        Method User1 = new User();
+//        Method User1 = new AI();
 //        Method User2 = new User();
-//
-//        ticTacToe game = new ticTacToe(original);
+//        String[][] board = {{e, e, e},
+//                {e, e, e},
+//                {e, e, e}};
+//        ticTacToe game = new ticTacToe(board);
 //        winner = game.run(User1, User2);
 //
 //        System.out.println();
