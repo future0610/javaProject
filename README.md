@@ -22,3 +22,11 @@
   <li>오픈소스로 구한 코드를 수정하여 GUI 작업 시작</li>
 </ul>
 </pre>
+
+#4주차
+<pre>
+<ul>
+  <li>alphaNode->maximizing, betaNode->minimizing으로 이름 변경</li>
+  <li>AI 구현 완료</li>
+</ul>
+</pre>
