@@ -1,7 +1,5 @@
 package TicTacToe;
 
-// draw 인자는 현재 노드의 상태를 보기 위해 임시로 true로 한다.
-
 public class inference {
     private ticTacToe game;
     private String player;
@@ -12,7 +10,6 @@ public class inference {
         this.player = player;
     }
     public int[] start() {
-        node generator = new node();
         maximizing alpha = new maximizing(this.game.getBoard(), this.player);
         alpha.call(3);
         this.result = alpha.getResult();
@@ -20,7 +17,7 @@ public class inference {
     }
 }
 
-class node {
+abstract class node {
     protected int selfIdx;
     protected int boundary;
     protected int monteCarlo(String[][] board, String player) {
@@ -30,7 +27,7 @@ class node {
         game.reset(player);
         game.switchTurn();
         for (int accuracy = 0; accuracy < 100; accuracy++) {
-            String winner = null;
+            String winner = game.evaluate();
             while (winner == null) {
                 int[] loc = ticTacToe.randomAction();
                 if (game.getBoard()[loc[0]][loc[1]].equals(ticTacToe.empty)) {
@@ -72,6 +69,7 @@ class maximizing extends node {
         this.game.reset(this.player);
     }
     public void connect(int depth) {
+        this.index = this.selfIdx;
         if (depth > 1) {
             for (int n = 0; n < 9; n++) {
                 int i = (int) (n / 3);
@@ -83,12 +81,14 @@ class maximizing extends node {
                     nextNode.setIndex(this.index);
                     nextNode.setBoundary(this.nodeScore);
                     nextNode.connect(depth - 1);
-                    if (this.nodeScore < nextNode.getNodeScore()) {
+                    if (this.nodeScore <= nextNode.getNodeScore()) {
                         this.nodeScore = nextNode.getNodeScore();
                     }
-                    if (this.index > 0 && this.boundary < nextNode.getNodeScore()) {
+                    if (this.index > 0 && this.boundary <= nextNode.getNodeScore()) {
+                        // beta-cut
                         break;
                     }
+                    this.index++;
                     this.game.reset();
                 }
             }
@@ -96,44 +96,82 @@ class maximizing extends node {
 
         else {
             int score;
+            int empty = 0;
+            for (int n = 0; n < 9; n++) {
+                int i = (int) (n / 3);
+                int j = (int) (n % 3);
+                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
+                    int[] loc = {i, j};
+                    if (this.game.evaluate() == null) {
+                        this.game.action(loc);
+                    }
+                    score = this.monteCarlo(this.game.getBoard(), this.player);
+                    if (this.nodeScore <= score) {
+                        this.nodeScore = score;
+                    }
+                    if (this.index > 0 && this.boundary <= score) {
+                        // beta-cut
+                        break;
+                    }
+                    this.index++;
+                    empty++;
+                    this.game.reset();
+                }
+            }
+            if (empty == 0) {
+                this.nodeScore = this.monteCarlo(this.game.getBoard(), this.player);
+            }
+        }
+    }
+
+    public void call(int depth) {
+        if (depth > 1) {
             for (int n = 0; n < 9; n++) {
                 int i = (int) (n / 3);
                 int j = (int) (n % 3);
                 if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
                     int[] loc = {i, j};
                     this.game.action(loc);
-                    score = this.monteCarlo(this.game.getBoard(), this.player);
-                    if (this.nodeScore < score) {
-                        this.nodeScore = score;
+                    minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                    nextNode.setIndex(this.index);
+                    nextNode.setBoundary(this.nodeScore);
+                    nextNode.connect(depth - 1);
+                    if (this.nodeScore <= nextNode.getNodeScore()) {
+                        this.result = loc;
+                        this.nodeScore = nextNode.getNodeScore();
                     }
-                    System.out.printf("%d\n", score);
-                    if (this.index > 0 && this.boundary < score) {
-                        break;
-                    }
+                    this.index++;
                     this.game.reset();
                 }
             }
-            System.out.printf("MAX: %d\n====================\n", this.nodeScore);
         }
-    }
-
-    public void call(int depth) {
-        for (int n = 0; n < 9; n++) {
-            int i = (int) (n / 3);
-            int j = (int) (n % 3);
-            if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
-                int[] loc = {i, j};
-                this.game.action(loc);
-                minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                nextNode.setIndex(this.index);
-                nextNode.setBoundary(this.nodeScore);
-                nextNode.connect(depth - 1);
-                if (this.nodeScore < nextNode.getNodeScore()) {
-                    this.result = loc;
-                    this.nodeScore = nextNode.getNodeScore();
+        else {
+            int score;
+            int empty = 0;
+            for (int n = 0; n < 9; n++) {
+                int i = (int) (n / 3);
+                int j = (int) (n % 3);
+                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
+                    int[] loc = {i, j};
+                    if (this.game.evaluate() == null) {
+                        this.game.action(loc);
+                    }
+                    score = this.monteCarlo(this.game.getBoard(), this.player);
+                    if (this.nodeScore <= score) {
+                        this.result = loc;
+                        this.nodeScore = score;
+                    }
+                    if (this.index > 0 && this.boundary <= score) {
+                        // beta-cut
+                        break;
+                    }
+                    this.index++;
+                    empty++;
+                    this.game.reset();
                 }
-                this.index++;
-                this.game.reset();
+            }
+            if (empty == 0) {
+                this.nodeScore = this.monteCarlo(this.game.getBoard(), this.player);
             }
         }
     }
@@ -170,12 +208,14 @@ class minimizing extends node {
                     nextNode.setIndex(this.index);
                     nextNode.setBoundary(this.nodeScore);
                     nextNode.connect(depth - 1);
-                    if (this.nodeScore > nextNode.getNodeScore()) {
+                    if (this.nodeScore >= nextNode.getNodeScore()) {
                         this.nodeScore = nextNode.getNodeScore();
                     }
-                    if (this.index > 0 && this.boundary > nextNode.getNodeScore()) {
+                    if (this.index > 0 && this.boundary >= nextNode.getNodeScore()) {
+                        // alpha-cut
                         break;
                     }
+                    this.index++;
                     this.game.reset();
                 }
             }
@@ -183,21 +223,28 @@ class minimizing extends node {
 
         else {
             int score;
+            int empty = 0;
             for (int n = 0; n < 9; n++) {
                 int i = (int) (n / 3);
                 int j = (int) (n % 3);
                 if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
                     int[] loc = {i, j};
                     this.game.action(loc);
-                    score = this.monteCarlo(this.game.getBoard(), this.player);
-                    if (this.nodeScore > score) {
+//                    this.game.draw();
+                    score = this.monteCarlo(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                    if (this.nodeScore >= score) {
                         this.nodeScore = score;
                     }
-                    if (this.index > 0 && this.boundary > score) {
+                    if (this.index > 0 && this.boundary >= score) {
+                        // alpha-cut
                         break;
                     }
                     this.game.reset();
+                    empty++;
                 }
+            }
+            if (empty == 0) {
+                this.nodeScore = this.monteCarlo(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
             }
         }
     }
