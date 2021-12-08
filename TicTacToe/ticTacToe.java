@@ -36,11 +36,11 @@ public class ticTacToe {
     }
     public ticTacToe(boolean draw, String[][] board) {
         this.drawBoard = draw;
-        /*
-        게임 보드를 화면에 표시할 것인지 나타내는 draw(default:true), 현재 보드의 상태인 board를 입력받는다.
-        board로 null을 받으면 모든 칸이 비어있는 보드를 초기 보드 상태로 설정한다.
-        String[][] board의 원소로서 X, O가 아닌 값이 있거나,
-        O 또는 X의 수가 X 또는 O의 수의 차이가 2 이상일 때 예외를 발생시켜 프로그램을 종효시킨다.
+        /**
+        * 게임 보드를 화면에 표시할 것인지 나타내는 draw(default:true), 현재 보드의 상태인 board를 입력받는다.
+        * board로 null을 받으면 모든 칸이 비어있는 보드를 초기 보드 상태로 설정한다.
+        * String[][] board의 원소로서 X, O가 아닌 값이 있거나,
+        * O 또는 X의 수가 X 또는 O의 수의 차이가 2 이상일 때 예외를 발생시켜 프로그램을 종효시킨다.
         */
         String[][] boardState = {{empty, empty, empty},
                                  {empty, empty, empty},
@@ -86,10 +86,8 @@ public class ticTacToe {
         }
     }
 
-    /*
-    ============
-    승패 여부 확인
-    ============
+    /**
+    * 승패 여부 확인
     */
 
     public String evaluate(){
@@ -125,10 +123,10 @@ public class ticTacToe {
     }
 
     private List<List> winCase() {
-        /*
-        이기는 모든 경우의 수를 구하는 메서드
-        3차원 텐서를 반환하고,
-        반환값의 각 요소는 2차원 좌표를 포함한 집합이다.
+        /**
+        * 이기는 모든 경우의 수를 구하는 메서드
+        * 3차원 텐서를 반환하고,
+        * 반환값의 각 요소는 2차원 좌표를 포함한 집합이다.
         */
 
         List<List> winSet = new ArrayList<List>();
@@ -178,36 +176,17 @@ public class ticTacToe {
         return winSet;
     }
 
-    /*
-    ============
-    게임 진행 관련
-    ============
+    /**
+    * 게임 진행 관련
     */
     
     public String run(Method user1, Method user2){
         // 게임을 진행하는 메서드
-//        JFrame frame = new JFrame("Tic Tac Toe");
-//
-//        frame.setSize(400, 460);
-//
-//        Toolkit tk = Toolkit.getDefaultToolkit();
-//        Dimension size = tk.getScreenSize();
-//        frame.setLocation((size.width-400)/2, (size.height-460)/2);
-//
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setVisible(true);
-
-//        gameManager mypnl = new gameManager();
 
         this.player1 = user1;
         this.player2 = user2;
         this.reset();
-
-//        mypnl.getBoard(this.board);
-//        frame.add(mypnl);
-//
-//        frame.revalidate();
-
+        
         String winner = null;
         while (winner == null){
             System.out.printf("현재 플레이어: %s\n", this.currentPieces);
@@ -232,7 +211,7 @@ public class ticTacToe {
     }
 
     public void action(int[] loc) {
-        // 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드
+        /** 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드 */
         int x = loc[0];
         int y = loc[1];
         if (this.board[x][y].equals(ticTacToe.empty)) {
@@ -268,15 +247,13 @@ public class ticTacToe {
         }
     }
 
-    /*
-    ====================
-    게임 순서를 정할 때 사용
-    ====================
+    /**
+    * 게임 순서를 정할 때 사용
     */
 
     public void reset(String player) {
-        /*
-        게임판을 초기화시키는 메서드
+        /**
+        * 게임판을 초기화시키는 메서드
         */
         this.board = ticTacToe.copyBoard(this.initialBoard);
         this.currentPieces = player;
@@ -288,8 +265,8 @@ public class ticTacToe {
         }
     }
     public void reset() {
-        /*
-        게임판을 초기화시키는 메서드
+        /**
+        * 게임판을 초기화시키는 메서드
         */
         this.board = ticTacToe.copyBoard(this.initialBoard);
         if (this.currentPieces == null) {
@@ -298,10 +275,10 @@ public class ticTacToe {
     }
 
     private String nextPlayer(){
-        /*
-        게임 상태에 따라 순서를 정해주는 메서드
-        1. 게임판에 O와 X의 수가 같으면 50%의 확률로 순서가 정해짐
-        2. 게임판에서 수가 적은 쪽이 선공 
+        /**
+        * 게임 상태에 따라 순서를 정해주는 메서드
+        * 1. 게임판에 O와 X의 수가 같으면 50%의 확률로 순서가 정해짐
+        * 2. 게임판에서 수가 적은 쪽이 선공 
         */
         int numPlayer = 0;
         int numOpponent = 0;
@@ -331,7 +308,7 @@ public class ticTacToe {
     }
 
     public void switchTurn() {
-        // 순서를 바꾸는 메서드
+        /** 순서를 바꾸는 메서드 */
         if (this.currentPieces.equals(ticTacToe.opponent)){
             this.currentPieces = ticTacToe.player;
             this.currentPlayer = this.player1;
@@ -352,14 +329,12 @@ public class ticTacToe {
         }
     }
 
-    /*
-    ====================
-    내장 함수
-    ====================
+    /**
+    * 내장 함수
     */
 
     public static int[] randomAction() {
-        // 말의 위치를 임의로 정하는 메서드
+        /** 말의 위치를 임의로 정하는 메서드 */
         Random random = new Random();
         int x, y;
         int[] loc = new int[2];
