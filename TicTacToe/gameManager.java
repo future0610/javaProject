@@ -1,5 +1,4 @@
 package TicTacToe;
-import TicTacToe.ticTacToe;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
