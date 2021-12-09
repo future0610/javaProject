@@ -34,6 +34,7 @@ public class gameManager extends JPanel implements ActionListener {
 
     Method User1;
     Method User2;
+    ticTacToe game = new ticTacToe();
 
     int[] loc = {-1, -1};
     int target = -1;
@@ -81,30 +82,12 @@ public class gameManager extends JPanel implements ActionListener {
         this.human.setEnabled(true);
         this.human.addActionListener(this);
         this.add(this.human);
+
+        System.out.println(this.target);
     }
 
-    void choosePlayer(String player) {
-        this.setPlayer(player);
-    }
-
-    private void setPlayer(String player) {
-        if (this.target == 0) {
-            if (player.equals(ticTacToe.player)) {
-                this.User1 = new AI();
-            }
-
-            else if (player.equals(ticTacToe.opponent)) {
-                this.User2 = new AI();
-            }
-        }
-        if (this.target == 1) {
-            if (player.equals(ticTacToe.player)) {
-                this.User1 = new User();
-            }
-            else if (player.equals(ticTacToe.opponent)) {
-                this.User2 = new User();
-            }
-        }
+    private void setPlayer() {
+//        if (this.target)
     }
 
     void revalidateFrame() {
@@ -117,6 +100,9 @@ public class gameManager extends JPanel implements ActionListener {
         this.setLayout(null);
         this.setBackground(backgroundColor);
 
+        this.setPlayer();
+
+        this.game.setGame(this.User1, this.User2);
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 this.btnArr[i][j] = new JButton();
@@ -124,6 +110,7 @@ public class gameManager extends JPanel implements ActionListener {
                 this.btnArr[i][j].setFont(gameBtnFont); //폰트
                 this.btnArr[i][j].setSize(100, 100);
                 this.btnArr[i][j].setLocation(43 + j * 100, 30 + i * 100);
+                this.winBtn.addActionListener(this);
                 this.add(this.btnArr[i][j]);
             }
         }
@@ -145,30 +132,6 @@ public class gameManager extends JPanel implements ActionListener {
         this.reBtn.setEnabled(true);
         this.reBtn.addActionListener(this);
         this.add(this.reBtn);
-    }
-
-    void getBoard(String[][] board) {
-        this.board = board;
-    }
-
-    void renewal() {
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                this.btnArr[i][j].setText(this.board[i][j]);
-                if (this.board[i][j].equals(ticTacToe.player)) {
-                    this.btnArr[i][j].setBackground(this.player1);
-                    this.btnArr[i][j].setEnabled(false);
-                }
-                else if (this.board[i][j].equals(ticTacToe.opponent)) {
-                    this.btnArr[i][j].setBackground(this.player2);
-                    this.btnArr[i][j].setEnabled(false);
-                }
-            }
-        }
-    }
-
-    boolean isRestart() {
-        return this.restart;
     }
 
     void evaluate(String winner) {
@@ -203,28 +166,35 @@ public class gameManager extends JPanel implements ActionListener {
         }
     }
 
-    void reset() {
-        this.loc[0] = -1;
-        this.loc[1] = -1;
-        this.restart = false;
-    }
-
-    JFrame getFrame() {
-        return this.frame;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (e.getSource() == this.btnArr[i][j]) {
-                    this.loc[0] = i;
-                    this.loc[1] = j;
+                this.btnArr[i][j].setText(this.game.getBoard()[i][j]);
+                if (this.game.getBoard()[i][j].equals(ticTacToe.player)) {
+                    this.btnArr[i][j].setBackground(this.player1);
+                    this.btnArr[i][j].setEnabled(false);
+                }
+
+                if (this.game.getBoard()[i][j].equals(ticTacToe.opponent)) {
+                    this.btnArr[i][j].setBackground(this.player2);
+                    this.btnArr[i][j].setEnabled(false);
                 }
             }
         }
+
+        if (this.game.isHuman()) {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (e.getSource() == this.btnArr[i][j]) {
+                        int[] loc = {i, j};
+                        this.btnArr[i][j].setEnabled(false);
+                    }
+                }
+            }
+        }
+
         if (e.getSource() == this.reBtn) {
-            this.restart = true;
             for(int i=0; i<3; i++) {
                 for(int j=0; j<3; j++) {
                     this.btnArr[i][j].setText(this.board[i][j]);
@@ -233,16 +203,17 @@ public class gameManager extends JPanel implements ActionListener {
                     this.winBtn.setBackground(btnColor);
                 }
             }
-            this.loc[0] = -1;
-            this.loc[1] = -1;
-            this.restart = false;
             this.winBtn.setText("Winner?");
+            this.init();
         }
-        if (e.getSource() == gameManager.this.ai) {
-            gameManager.this.target = 0;
-        }
-        if (e.getSource() == gameManager.this.human) {
-            gameManager.this.target = 1;
-        }
+        this.game.run();
+    }
+
+    void end() {
+        this.remove(this.instruction);
+        this.remove(this.ai);
+        this.remove(this.human);
+        this.frame.remove(this);
+        this.revalidateFrame();
     }
 }
