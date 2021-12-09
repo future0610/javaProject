@@ -18,14 +18,12 @@ public class inference {
 }
 
 abstract class node {
-    protected int selfIdx;
     protected int boundary;
     protected int monteCarlo(String[][] board, String player) {
         // MonteCarlo 방식으로 점수 계산
         ticTacToe game = new ticTacToe(false, board);
         int score = 0;
-        game.reset(player);
-        game.switchTurn();
+        game.reset(ticTacToe.switchPlayer(player));
         for (int accuracy = 0; accuracy < 100; accuracy++) {
             String winner = game.evaluate();
             while (winner == null) {
@@ -44,7 +42,7 @@ abstract class node {
                     score -= 1;
                 }
             }
-            game.reset(player);
+            game.reset(ticTacToe.switchPlayer(player));
         }
         return score;
     }
@@ -52,43 +50,43 @@ abstract class node {
     protected void setBoundary(int boundary) {
         this.boundary = boundary;
     }
-    protected void setIndex(int index) {
-        this.selfIdx = index;
-    }
 }
 
 class maximizing extends node {
     private ticTacToe game;
     private String player;
-    private int nodeScore = -100;
-    private int index = 0;
+    private int nodeScore = -101;
     private int[] result;
     public maximizing(String[][] board, String player) {
-        this.game = new ticTacToe(false, board);
+        this.game = new ticTacToe(true, board);
         this.player = player;
         this.game.reset(this.player);
     }
     public void connect(int depth) {
-        this.index = this.selfIdx;
         if (depth > 1) {
+            int score;
             for (int n = 0; n < 9; n++) {
                 int i = (int) (n / 3);
                 int j = (int) (n % 3);
                 if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
                     int[] loc = {i, j};
-                    this.game.action(loc);
-                    minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                    nextNode.setIndex(this.index);
-                    nextNode.setBoundary(this.nodeScore);
-                    nextNode.connect(depth - 1);
-                    if (this.nodeScore <= nextNode.getNodeScore()) {
-                        this.nodeScore = nextNode.getNodeScore();
+                    if (this.game.evaluate() == null) {
+                        this.game.action(loc);
+                        minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                        nextNode.setBoundary(this.nodeScore);
+                        nextNode.connect(depth - 1);
+                        score = nextNode.getNodeScore();
                     }
-                    if (this.index > 0 && this.boundary <= nextNode.getNodeScore()) {
+                    else {
+                        score = this.monteCarlo(this.game.getBoard(), this.player);
+                    }
+                    if (this.nodeScore <= score) {
+                        this.nodeScore = score;
+                    }
+                    if ((this.boundary < 101 && this.boundary > -101) && this.boundary <= score) {
                         // beta-cut
                         break;
                     }
-                    this.index++;
                     this.game.reset();
                 }
             }
@@ -106,18 +104,21 @@ class maximizing extends node {
                         this.game.action(loc);
                     }
                     score = this.monteCarlo(this.game.getBoard(), this.player);
+//                    this.game.draw();
+//                    System.out.println(score);
                     if (this.nodeScore <= score) {
                         this.nodeScore = score;
                     }
-                    if (this.index > 0 && this.boundary <= score) {
+                    if ((this.boundary < 101 && this.boundary > -101) && this.boundary <= score) {
                         // beta-cut
                         break;
                     }
-                    this.index++;
                     empty++;
                     this.game.reset();
                 }
             }
+//            System.out.println("=====================");
+
             if (empty == 0) {
                 this.nodeScore = this.monteCarlo(this.game.getBoard(), this.player);
             }
@@ -126,6 +127,7 @@ class maximizing extends node {
 
     public void call(int depth) {
         if (depth > 1) {
+            int score;
             for (int n = 0; n < 9; n++) {
                 int i = (int) (n / 3);
                 int j = (int) (n % 3);
@@ -133,18 +135,22 @@ class maximizing extends node {
                     int[] loc = {i, j};
                     this.game.action(loc);
                     minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                    nextNode.setIndex(this.index);
-                    nextNode.setBoundary(this.nodeScore);
+                    nextNode.setBoundary(this.nodeScore); // nextNode의 boundary = this.nodeScore
                     nextNode.connect(depth - 1);
-                    if (this.nodeScore <= nextNode.getNodeScore()) {
+                    score = nextNode.getNodeScore();
+
+                    this.game.draw();
+                    System.out.println(score);
+                    System.out.println("##################################");
+                    if (this.nodeScore <= score) {
                         this.result = loc;
-                        this.nodeScore = nextNode.getNodeScore();
+                        this.nodeScore = score;
                     }
-                    this.index++;
                     this.game.reset();
                 }
             }
         }
+
         else {
             int score;
             int empty = 0;
@@ -153,19 +159,16 @@ class maximizing extends node {
                 int j = (int) (n % 3);
                 if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
                     int[] loc = {i, j};
-                    if (this.game.evaluate() == null) {
-                        this.game.action(loc);
-                    }
+                    this.game.action(loc);
                     score = this.monteCarlo(this.game.getBoard(), this.player);
                     if (this.nodeScore <= score) {
                         this.result = loc;
                         this.nodeScore = score;
                     }
-                    if (this.index > 0 && this.boundary <= score) {
+                    if ((this.boundary < 101 && this.boundary > -101) && this.boundary <= score) {
                         // beta-cut
                         break;
                     }
-                    this.index++;
                     empty++;
                     this.game.reset();
                 }
@@ -188,34 +191,42 @@ class maximizing extends node {
 class minimizing extends node {
     private ticTacToe game;
     private String player;
-    private int nodeScore = 100;
-    private int index = 0;
+    private int nodeScore = 101;
     public minimizing(String[][] board, String player) {
-        this.game = new ticTacToe(false, board);
+        this.game = new ticTacToe(true, board);
         this.player = player;
         this.game.reset(this.player);
     }
     public void connect(int depth) {
-        this.index = this.selfIdx;
         if (depth > 1) {
+            int score;
             for (int n = 0; n < 9; n++) {
                 int i = (int) (n / 3);
                 int j = (int) (n % 3);
                 if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
                     int[] loc = {i, j};
-                    this.game.action(loc);
-                    maximizing nextNode = new maximizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                    nextNode.setIndex(this.index);
-                    nextNode.setBoundary(this.nodeScore);
-                    nextNode.connect(depth - 1);
-                    if (this.nodeScore >= nextNode.getNodeScore()) {
-                        this.nodeScore = nextNode.getNodeScore();
+                    if (this.game.evaluate() == null) {
+                        this.game.action(loc);
+                        maximizing nextNode = new maximizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                        nextNode.setBoundary(this.nodeScore);
+                        nextNode.connect(depth - 1);
+                        score = nextNode.getNodeScore();
                     }
-                    if (this.index > 0 && this.boundary >= nextNode.getNodeScore()) {
+                    else {
+                        this.game.draw();
+                        score = -1 * this.monteCarlo(this.game.getBoard(), this.player);
+                    }
+//                    System.out.println(score);
+//                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!");
+//                    this.game.draw();
+
+                    if (this.nodeScore >= score) {
+                        this.nodeScore = score;
+                    }
+                    if ((this.boundary < 101 && this.boundary > -101) && this.boundary >= score) {
                         // alpha-cut
-                        break;
+//                        break;
                     }
-                    this.index++;
                     this.game.reset();
                 }
             }
@@ -230,12 +241,11 @@ class minimizing extends node {
                 if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
                     int[] loc = {i, j};
                     this.game.action(loc);
-//                    this.game.draw();
-                    score = this.monteCarlo(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                    score = -1 * this.monteCarlo(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
                     if (this.nodeScore >= score) {
                         this.nodeScore = score;
                     }
-                    if (this.index > 0 && this.boundary >= score) {
+                    if ((this.boundary < 101 && this.boundary > -101) && this.boundary >= score) {
                         // alpha-cut
                         break;
                     }
