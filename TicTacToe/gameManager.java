@@ -1,4 +1,5 @@
 package TicTacToe;
+import TicTacToe.ticTacToe;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -38,6 +39,8 @@ public class gameManager extends JPanel implements ActionListener {
     int[] loc = {-1, -1};
     int target = -1;
 
+    int  sequence = 0;
+
     public gameManager() {
         JFrame frame = new JFrame("Tic Tac Toe");
 
@@ -54,6 +57,7 @@ public class gameManager extends JPanel implements ActionListener {
     }
 
     void menu() {
+        this.sequence++;
         this.setLayout(null);
         this.setBackground(backgroundColor);
 
@@ -86,7 +90,7 @@ public class gameManager extends JPanel implements ActionListener {
     }
 
     private void setPlayer() {
-//        if (this.target)
+        this.sequence++;
     }
 
     void revalidateFrame() {
@@ -98,8 +102,6 @@ public class gameManager extends JPanel implements ActionListener {
     void init() {
         this.setLayout(null);
         this.setBackground(backgroundColor);
-
-        this.setPlayer();
 
         this.game.setGame(this.User1, this.User2);
         for(int i = 0; i < 3; i++) {
@@ -165,54 +167,71 @@ public class gameManager extends JPanel implements ActionListener {
         }
     }
 
+    void refresh() {
+        this.remove(this);
+        JFrame frame = new JFrame("Tic Tac Toe");
+
+        frame.setSize(400, 460);
+
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        Dimension size = tk.getScreenSize();
+        frame.setLocation((size.width - 400) / 2, (size.height - 460) / 2);
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+
+        this.frame = frame;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                this.btnArr[i][j].setText(this.game.getBoard()[i][j]);
-                if (this.game.getBoard()[i][j].equals(ticTacToe.player)) {
-                    this.btnArr[i][j].setBackground(this.player1);
-                    this.btnArr[i][j].setEnabled(false);
-                }
+        if (this.sequence == 1) {
+            if (e.getSource() == this.ai) {
+                this.User1 = new AI();
+            }
 
-                if (this.game.getBoard()[i][j].equals(ticTacToe.opponent)) {
-                    this.btnArr[i][j].setBackground(this.player2);
-                    this.btnArr[i][j].setEnabled(false);
-                }
+            if (e.getSource() == this.human) {
+                this.User2 = new User();
+            }
+
+            if (this.User1 != null && this.User2 != null) {
+                this.sequence++;
+                this.game.reset();
+                this.refresh();
+                this.init();
+                this.revalidateFrame();
             }
         }
-
-        if (this.game.isHuman()) {
+        if (this.sequence == 2) {
+            System.out.println("!!");
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (e.getSource() == this.btnArr[i][j]) {
-                        int[] loc = {i, j};
+                    this.btnArr[i][j].setText(this.game.getBoard()[i][j]);
+                    if (this.game.getBoard()[i][j].equals(ticTacToe.player)) {
+                        this.btnArr[i][j].setBackground(this.player1);
+                        this.btnArr[i][j].setEnabled(false);
+                    }
+
+                    if (this.game.getBoard()[i][j].equals(ticTacToe.opponent)) {
+                        this.btnArr[i][j].setBackground(this.player2);
                         this.btnArr[i][j].setEnabled(false);
                     }
                 }
             }
-        }
+            this.game.run();
 
-        if (e.getSource() == this.reBtn) {
-            for(int i=0; i<3; i++) {
-                for(int j=0; j<3; j++) {
-                    this.btnArr[i][j].setText(this.board[i][j]);
-                    this.btnArr[i][j].setEnabled(true);
-                    this.btnArr[i][j].setBackground(btnColor);
-                    this.winBtn.setBackground(btnColor);
+            if (e.getSource() == this.reBtn) {
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        this.btnArr[i][j].setText(this.board[i][j]);
+                        this.btnArr[i][j].setEnabled(true);
+                        this.btnArr[i][j].setBackground(btnColor);
+                        this.winBtn.setBackground(btnColor);
+                    }
                 }
+                this.winBtn.setText("Winner?");
+                this.init();
             }
-            this.winBtn.setText("Winner?");
-            this.init();
         }
-        this.game.run();
-    }
-
-    void end() {
-        this.remove(this.instruction);
-        this.remove(this.ai);
-        this.remove(this.human);
-        this.frame.remove(this);
-        this.revalidateFrame();
     }
 }
