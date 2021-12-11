@@ -197,34 +197,49 @@ public class ticTacToe {
         }
     }
 
-    public String run(Method user1, Method user2){
-        // 게임을 진행하는 메서드
 
+    void setGame(Method user1, Method user2) {
         this.player1 = user1;
         this.player2 = user2;
         this.reset();
+    }
+
+    String run(){
+        // 게임을 진행하는 메서드
 
         String winner = null;
-        while (winner == null){
-            System.out.printf("현재 플레이어: %s\n", this.currentPieces);
-            this.draw();
-            int[] loc;
-            System.out.print("위치를 입력하세요: ");
 
-            this.currentPlayer.setPlayer(this.currentPieces);
-            loc = this.currentPlayer.method(this.board);
-            if (loc[0] != -1 && loc[1] != -1) {
-                this.action(loc);
-                switchTurn();
-            }
-            else {
-                winner = this.restart(winner);
-            }
-
-            winner = this.evaluate();
-            System.out.println();
-        }
+        System.out.printf("현재 플레이어: %s\n", this.currentPieces);
         this.draw();
+        int[] loc;
+        System.out.print("위치를 입력하세요: ");
+
+        this.currentPlayer.setManager(this.manager);
+        this.currentPlayer.setPlayer(this.currentPieces);
+        loc = this.currentPlayer.method(this.board);
+        this.action(loc);
+        this.switchTurn();
+        winner = this.evaluate();
+//        while (winner == null){
+//            System.out.printf("현재 플레이어: %s\n", this.currentPieces);
+//            this.draw();
+//            int[] loc;
+//            System.out.print("위치를 입력하세요: ");
+//
+//            this.currentPlayer.setPlayer(this.currentPieces);
+//            loc = this.currentPlayer.method(this.board);
+//            if (loc[0] != -1 && loc[1] != -1) {
+//                this.action(loc);
+//                switchTurn();
+//            }
+//            else {
+//                winner = this.restart(winner);
+//            }
+//
+//            winner = this.evaluate();
+//            System.out.println();
+//        }
+//        this.draw();
         return winner;
     }
 
@@ -235,6 +250,15 @@ public class ticTacToe {
         this.reset();
 
         return winner;
+    }
+
+    boolean isHuman() {
+        if (this.currentPlayer instanceof AI) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     /*
