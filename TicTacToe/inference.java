@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 package TicTacToe;
+
 public class inference {
     private ticTacToe game;
     private String player;
@@ -14,7 +14,7 @@ public class inference {
         maximizing alpha = new maximizing(this.game.getBoard(), this.player);
         alpha.call(depth);
         this.result = alpha.getResult();
-//        System.out.println("%d %d".formatted(this.result[0], this.result[1]));
+       System.out.println("%d %d".formatted(this.result[0], this.result[1]));
         return this.result;
     }
 }
