@@ -1,5 +1,4 @@
 package TicTacToe;
-
 public class inference {
     private ticTacToe game;
     private String player;
@@ -9,23 +8,32 @@ public class inference {
         this.game.reset(player);
         this.player = player;
     }
-    public int[] start() {
+
+    public int[] start(int depth) {
         maximizing alpha = new maximizing(this.game.getBoard(), this.player);
-        alpha.call(3);
+        alpha.call(depth);
         this.result = alpha.getResult();
+//        System.out.println("%d %d".formatted(this.result[0], this.result[1]));
         return this.result;
     }
 }
 
+interface generalNode {
+    abstract void connect(int depth);
+    abstract void reScore(int[] loc);
+    abstract void reScore();
+    abstract boolean cut();
+    abstract int scoring();
+    abstract int getNodeScore();
+}
+
 abstract class node {
-    protected int selfIdx;
     protected int boundary;
     protected int monteCarlo(String[][] board, String player) {
         // MonteCarlo 방식으로 점수 계산
         ticTacToe game = new ticTacToe(false, board);
         int score = 0;
-        game.reset(player);
-        game.switchTurn();
+        game.reset(ticTacToe.switchPlayer(player));
         for (int accuracy = 0; accuracy < 100; accuracy++) {
             String winner = game.evaluate();
             while (winner == null) {
@@ -44,211 +52,207 @@ abstract class node {
                     score -= 1;
                 }
             }
-            game.reset(player);
+            game.reset(ticTacToe.switchPlayer(player));
         }
         return score;
     }
 
-    protected void setBoundary(int boundary) {
+    public void setBoundary(int boundary) {
         this.boundary = boundary;
-    }
-    protected void setIndex(int index) {
-        this.selfIdx = index;
     }
 }
 
-class maximizing extends node {
+class maximizing extends node implements generalNode {
     private ticTacToe game;
     private String player;
-    private int nodeScore = -100;
-    private int index = 0;
+    private int nodeScore = -101;
+    private int score;
     private int[] result;
-    public maximizing(String[][] board, String player) {
-        this.game = new ticTacToe(false, board);
+    maximizing(String[][] board, String player) {
+        this.game = new ticTacToe(true, board);
         this.player = player;
         this.game.reset(this.player);
     }
+
+    void call(int depth) {
+        for (int n = 0; n < 9; n++) {
+            int i = (int) (n / 3);
+            int j = (int) (n % 3);
+            if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
+                int[] loc = {i, j};
+                this.game.action(loc);
+                if (depth > 1) {
+                    minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                    nextNode.setBoundary(this.nodeScore); // nextNode의 boundary = this.nodeScore
+                    nextNode.connect(depth - 1);
+                    this.score = nextNode.getNodeScore();
+                }
+                else{
+                    this.score = this.scoring();
+                }
+                this.reScore(loc);
+                this.game.reset();
+            }
+        }
+    }
+
+    int[] getResult() {
+        return result;
+    }
+
+    @Override
     public void connect(int depth) {
-        this.index = this.selfIdx;
-        if (depth > 1) {
-            for (int n = 0; n < 9; n++) {
-                int i = (int) (n / 3);
-                int j = (int) (n % 3);
-                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
-                    int[] loc = {i, j};
-                    this.game.action(loc);
-                    minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                    nextNode.setIndex(this.index);
-                    nextNode.setBoundary(this.nodeScore);
-                    nextNode.connect(depth - 1);
-                    if (this.nodeScore <= nextNode.getNodeScore()) {
-                        this.nodeScore = nextNode.getNodeScore();
+        int empty = 0;
+        for (int n = 0; n < 9; n++) {
+            int i = (int) (n / 3);
+            int j = (int) (n % 3);
+            if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
+                empty++;
+                int[] loc = {i, j};
+                if (depth > 1) {
+                    if (this.game.evaluate() == null) {
+                        this.game.action(loc);
+                        minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                        nextNode.setBoundary(this.nodeScore);
+                        nextNode.connect(depth - 1);
+                        this.score = nextNode.getNodeScore();
                     }
-                    if (this.index > 0 && this.boundary <= nextNode.getNodeScore()) {
-                        // beta-cut
-                        break;
+                    else {
+                        this.score = this.scoring();
                     }
-                    this.index++;
-                    this.game.reset();
                 }
-            }
-        }
-
-        else {
-            int score;
-            int empty = 0;
-            for (int n = 0; n < 9; n++) {
-                int i = (int) (n / 3);
-                int j = (int) (n % 3);
-                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
-                    int[] loc = {i, j};
+                else {
                     if (this.game.evaluate() == null) {
                         this.game.action(loc);
                     }
-                    score = this.monteCarlo(this.game.getBoard(), this.player);
-                    if (this.nodeScore <= score) {
-                        this.nodeScore = score;
-                    }
-                    if (this.index > 0 && this.boundary <= score) {
-                        // beta-cut
-                        break;
-                    }
-                    this.index++;
-                    empty++;
-                    this.game.reset();
+                    this.score = this.scoring();
+//                    this.game.draw();
+//                    System.out.println(this.score);
                 }
+                this.reScore();
+                if (this.cut()) {
+                    // beta-cut
+                    break;
+                }
+                this.game.reset();
             }
-            if (empty == 0) {
-                this.nodeScore = this.monteCarlo(this.game.getBoard(), this.player);
-            }
+        }
+        if (empty == 0) {
+            this.nodeScore = this.scoring();
         }
     }
 
-    public void call(int depth) {
-        if (depth > 1) {
-            for (int n = 0; n < 9; n++) {
-                int i = (int) (n / 3);
-                int j = (int) (n % 3);
-                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
-                    int[] loc = {i, j};
-                    this.game.action(loc);
-                    minimizing nextNode = new minimizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                    nextNode.setIndex(this.index);
-                    nextNode.setBoundary(this.nodeScore);
-                    nextNode.connect(depth - 1);
-                    if (this.nodeScore <= nextNode.getNodeScore()) {
-                        this.result = loc;
-                        this.nodeScore = nextNode.getNodeScore();
-                    }
-                    this.index++;
-                    this.game.reset();
-                }
-            }
+    @Override
+    public int scoring() {
+        return this.monteCarlo(this.game.getBoard(), this.player);
+    }
+
+    @Override
+    public boolean cut() {
+        if ((this.boundary < 101 && this.boundary > -101) && this.boundary <= this.score){
+            return true;
         }
-        else {
-            int score;
-            int empty = 0;
-            for (int n = 0; n < 9; n++) {
-                int i = (int) (n / 3);
-                int j = (int) (n % 3);
-                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
-                    int[] loc = {i, j};
-                    if (this.game.evaluate() == null) {
-                        this.game.action(loc);
-                    }
-                    score = this.monteCarlo(this.game.getBoard(), this.player);
-                    if (this.nodeScore <= score) {
-                        this.result = loc;
-                        this.nodeScore = score;
-                    }
-                    if (this.index > 0 && this.boundary <= score) {
-                        // beta-cut
-                        break;
-                    }
-                    this.index++;
-                    empty++;
-                    this.game.reset();
-                }
-            }
-            if (empty == 0) {
-                this.nodeScore = this.monteCarlo(this.game.getBoard(), this.player);
-            }
+        return false;
+    }
+
+    @Override
+    public void reScore(int[] loc) {
+        if (this.nodeScore < this.score) {
+            this.result = loc;
+            this.nodeScore = this.score;
         }
     }
 
+    @Override
+    public void reScore() {
+        if (this.nodeScore < this.score) {
+            this.nodeScore = this.score;
+        }
+    }
+
+    @Override
     public int getNodeScore() {
         return nodeScore;
     }
-
-    public int[] getResult() {
-        return result;
-    }
 }
 
-class minimizing extends node {
+class minimizing extends node implements generalNode {
     private ticTacToe game;
     private String player;
-    private int nodeScore = 100;
-    private int index = 0;
-    public minimizing(String[][] board, String player) {
+    private int nodeScore = 101;
+    private int score;
+
+    minimizing(String[][] board, String player) {
         this.game = new ticTacToe(false, board);
         this.player = player;
         this.game.reset(this.player);
     }
+
+    @Override
     public void connect(int depth) {
-        this.index = this.selfIdx;
-        if (depth > 1) {
-            for (int n = 0; n < 9; n++) {
-                int i = (int) (n / 3);
-                int j = (int) (n % 3);
-                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
-                    int[] loc = {i, j};
-                    this.game.action(loc);
-                    maximizing nextNode = new maximizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                    nextNode.setIndex(this.index);
-                    nextNode.setBoundary(this.nodeScore);
-                    nextNode.connect(depth - 1);
-                    if (this.nodeScore >= nextNode.getNodeScore()) {
-                        this.nodeScore = nextNode.getNodeScore();
+        int empty = 0;
+        for (int n = 0; n < 9; n++) {
+            int i = (int) (n / 3);
+            int j = (int) (n % 3);
+            if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
+                empty++;
+                int[] loc = {i, j};
+                if (depth > 1) {
+                    if (this.game.evaluate() == null) {
+                        this.game.action(loc);
+                        maximizing nextNode = new maximizing(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+                        nextNode.setBoundary(this.nodeScore);
+                        nextNode.connect(depth - 1);
+                        this.score = nextNode.getNodeScore();
+                    } else {
+                        this.score = this.scoring();
                     }
-                    if (this.index > 0 && this.boundary >= nextNode.getNodeScore()) {
-                        // alpha-cut
-                        break;
+                } else {
+                    if (this.game.evaluate() == null) {
+                        this.game.action(loc);
                     }
-                    this.index++;
-                    this.game.reset();
+                    this.score = this.scoring();
                 }
+
+                this.reScore();
+                if (this.cut()) {
+                    // alpha-cut
+                    break;
+                }
+                this.game.reset();
             }
         }
-
-        else {
-            int score;
-            int empty = 0;
-            for (int n = 0; n < 9; n++) {
-                int i = (int) (n / 3);
-                int j = (int) (n % 3);
-                if (this.game.getBoard()[i][j].equals(ticTacToe.empty)) {
-                    int[] loc = {i, j};
-                    this.game.action(loc);
-//                    this.game.draw();
-                    score = this.monteCarlo(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-                    if (this.nodeScore >= score) {
-                        this.nodeScore = score;
-                    }
-                    if (this.index > 0 && this.boundary >= score) {
-                        // alpha-cut
-                        break;
-                    }
-                    this.game.reset();
-                    empty++;
-                }
-            }
-            if (empty == 0) {
-                this.nodeScore = this.monteCarlo(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
-            }
+        if (empty == 0) {
+            this.nodeScore = this.scoring();
         }
     }
 
+    @Override
+    public boolean cut() {
+        if ((this.boundary < 101 && this.boundary > -101) && this.boundary >= score) {
+            // alpha-cut
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void reScore(int[] loc) {
+    }
+
+    @Override
+    public void reScore() {
+        if (this.nodeScore > this.score) {
+            this.nodeScore = this.score;
+        }
+    }
+
+    @Override
+    public int scoring() {
+        return this.monteCarlo(this.game.getBoard(), ticTacToe.switchPlayer(this.player));
+    }
+
+    @Override
     public int getNodeScore() {
         return nodeScore;
     }
