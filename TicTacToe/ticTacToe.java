@@ -183,55 +183,8 @@ public class ticTacToe {
     게임 진행 관련
     ============
     */
-    
-    public String run(Method user1, Method user2){
-        // 게임을 진행하는 메서드
-//        JFrame frame = new JFrame("Tic Tac Toe");
-//
-//        frame.setSize(400, 460);
-//
-//        Toolkit tk = Toolkit.getDefaultToolkit();
-//        Dimension size = tk.getScreenSize();
-//        frame.setLocation((size.width-400)/2, (size.height-460)/2);
-//
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setVisible(true);
 
-//        gameManager mypnl = new gameManager();
-
-        this.player1 = user1;
-        this.player2 = user2;
-        this.reset();
-
-//        mypnl.getBoard(this.board);
-//        frame.add(mypnl);
-//
-//        frame.revalidate();
-
-        String winner = null;
-        while (winner == null){
-            System.out.printf("현재 플레이어: %s\n", this.currentPieces);
-            this.draw();
-            int[] loc;
-            System.out.print("위치를 입력하세요: ");
-
-            this.currentPlayer.setPlayer(this.currentPieces);
-            loc = this.currentPlayer.method(this.board);
-            this.action(loc);
-
-            switchTurn();
-            winner = this.evaluate();
-            System.out.println();
-        }
-        this.draw();
-        return winner;
-    }
-
-    public void showDisplay(gameManager manager) {
-        this.manager = manager;
-    }
-
-    public void action(int[] loc) {
+    void action(int[] loc) {
         // 플레이어가 정한 위치에 사용자의 게임말을 놓아주는 메서드
         int x = loc[0];
         int y = loc[1];
@@ -243,6 +196,79 @@ public class ticTacToe {
             this.switchTurn();
         }
     }
+
+
+    void setGame(Method user1, Method user2) {
+        this.player1 = user1;
+        this.player2 = user2;
+        this.reset();
+    }
+
+    String run(){
+        // 게임을 진행하는 메서드
+
+        String winner = null;
+
+        System.out.printf("현재 플레이어: %s\n", this.currentPieces);
+        this.draw();
+        int[] loc;
+        System.out.print("위치를 입력하세요: ");
+
+        this.currentPlayer.setManager(this.manager);
+        this.currentPlayer.setPlayer(this.currentPieces);
+        loc = this.currentPlayer.method(this.board);
+        this.action(loc);
+        this.switchTurn();
+        winner = this.evaluate();
+//        while (winner == null){
+//            System.out.printf("현재 플레이어: %s\n", this.currentPieces);
+//            this.draw();
+//            int[] loc;
+//            System.out.print("위치를 입력하세요: ");
+//
+//            this.currentPlayer.setPlayer(this.currentPieces);
+//            loc = this.currentPlayer.method(this.board);
+//            if (loc[0] != -1 && loc[1] != -1) {
+//                this.action(loc);
+//                switchTurn();
+//            }
+//            else {
+//                winner = this.restart(winner);
+//            }
+//
+//            winner = this.evaluate();
+//            System.out.println();
+//        }
+//        this.draw();
+        return winner;
+    }
+
+    private String restart(String winner) {
+        this.currentPieces = null;
+        this.currentPlayer = null;
+        winner = null;
+        this.reset();
+
+        return winner;
+    }
+
+    boolean isHuman() {
+        if (this.currentPlayer instanceof AI) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    /*
+    GUI 관련
+    */
+
+    public void setFrame(gameManager manager) {
+        this.manager = manager;
+    }
+
 
     public void draw() {
         // 게임판을 그려주는 메서드

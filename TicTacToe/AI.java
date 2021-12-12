@@ -21,4 +21,9 @@ public class AI implements Method{
     public void setPlayer(String player) {
         this.playerPieces = player;
     }
+
+    @Override
+    public void display(gameManager manager) {
+
+    }
 }

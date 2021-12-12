@@ -23,7 +23,7 @@
 </ul>
 </pre>
 
-#4주차
+# 4주차
 <pre>
 <ul>
   <li>alphaNode->maximizing, betaNode->minimizing으로 이름 변경</li>
