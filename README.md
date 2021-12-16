@@ -30,3 +30,11 @@
   <li>AI 구현 완료 - depth에 따라 게임의 난도가 달라짐</li>
 </ul>
 </pre>
+
+# 5주차
+<pre>
+<ul>
+  <li>AI 오류 수정</li>
+  <li>GUI 구현 완료</li>
+</ul>
+</pre>
