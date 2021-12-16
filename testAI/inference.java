@@ -1,4 +1,4 @@
-package TicTacToe;
+package testAI;
 
 public class inference {
     private ticTacToe game;
@@ -91,20 +91,20 @@ class maximizing extends node implements generalNode {
                 }
                 this.reScore(loc);
                 /**
-                **점수 확인**
-                System.out.println();
-                System.out.printf("maximizing node lvl3 score: %d", this.score);
-                System.out.println();
-                */
+                 **점수 확인**
+                 System.out.println();
+                 System.out.printf("maximizing node lvl3 score: %d", this.score);
+                 System.out.println();
+                 */
                 this.game.reset();
             }
         }
         /**
-        **점수 확인**
-        System.out.println();
-        System.out.printf("maximizing node lvl3 score: %d", this.nodeScore);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println();
+         **점수 확인**
+         System.out.println();
+         System.out.printf("maximizing node lvl3 score: %d", this.nodeScore);
+         System.out.println("!!!!!!!!!!!!!!!!!!!!!!");
+         System.out.println();
          */
     }
 
@@ -146,8 +146,8 @@ class maximizing extends node implements generalNode {
                     }
                     this.score = this.scoring();
                     /**
-                    **점수 확인**
-                    System.out.println("maximizing node lvl1 score: %d".formatted(this.score));
+                     **점수 확인**
+                     System.out.println("maximizing node lvl1 score: %d".formatted(this.score));
                      */
                 }
                 this.reScore();
@@ -162,16 +162,16 @@ class maximizing extends node implements generalNode {
             this.nodeScore = this.scoring();
         }
         /**
-        **점수 확인**
-        if (depth == 1) {
-            System.out.printf("maximizing node lvl1 maximum: %d", this.nodeScore);
-            System.out.println("=====================");
-        }
-        else {
-            System.out.printf("maximizing node lvl3 maximum: %d", this.nodeScore);
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!");
-        }
-        */
+         **점수 확인**
+         if (depth == 1) {
+         System.out.printf("maximizing node lvl1 maximum: %d", this.nodeScore);
+         System.out.println("=====================");
+         }
+         else {
+         System.out.printf("maximizing node lvl3 maximum: %d", this.nodeScore);
+         System.out.println("!!!!!!!!!!!!!!!!!!!!!!");
+         }
+         */
     }
 
     @Override
@@ -241,13 +241,13 @@ class minimizing extends node implements generalNode {
 
                 this.reScore();
                 /**
-                **점수 확인**
-                if (depth > 1) {
-                    System.out.println();
-                    System.out.printf("minimizing node lvl2 score: %d\n", this.score);
-                    System.out.println();
-                }
-                */
+                 **점수 확인**
+                 if (depth > 1) {
+                 System.out.println();
+                 System.out.printf("minimizing node lvl2 score: %d\n", this.score);
+                 System.out.println();
+                 }
+                 */
                 if (this.cut()) {
                     // alpha-cut
                     break;
@@ -259,14 +259,14 @@ class minimizing extends node implements generalNode {
             this.nodeScore = this.scoring();
         }
         /**
-        **점수 확인**
-        if (depth > 1) {
-            System.out.println();
-            System.out.printf("minimizing node lvl2 score: %d", this.nodeScore);
-            System.out.println("-------------------------");
-            System.out.println();
-        }
-        */
+         **점수 확인**
+         if (depth > 1) {
+         System.out.println();
+         System.out.printf("minimizing node lvl2 score: %d", this.nodeScore);
+         System.out.println("-------------------------");
+         System.out.println();
+         }
+         */
     }
 
     @Override

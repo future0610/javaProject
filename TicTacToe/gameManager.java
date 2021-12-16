@@ -21,17 +21,24 @@ public class gameManager extends JPanel {
     JButton[][] boardBtn = new JButton[3][3];
     JButton reGameBtn = new JButton();
     ActionListener menuOptionListener = new ActionListener() {
+        int ai = 3;
+        int step = 0;
         @Override
         public void actionPerformed(ActionEvent e) {
+            for (int i = 0; i < 3; i++) {
+                if (e.getSource() == gameManager.this.menu.gameLevel[i]) {
+                    this.ai = i + 1;
+                }
+            }
             if (e.getSource() == gameManager.this.menu.select[0]) {
                 gameManager.this.step++;
                 if (gameManager.this.step == 1) {
                     gameManager.this.menu.instruction.setText("Choose Player2");
                     gameManager.this.menu.instruction.setBackground(gameManager.this.menu.colorP2);
-                    gameManager.this.user1 = new AI(3);
+                    gameManager.this.user1 = new AI(this.ai);
                 }
                 if (gameManager.this.step == 2) {
-                    gameManager.this.user2 = new AI(3);
+                    gameManager.this.user2 = new AI(this.ai);
                 }
             }
             if (e.getSource() == gameManager.this.menu.select[1]) {
@@ -135,6 +142,9 @@ public class gameManager extends JPanel {
         for (int i = 0; i < 2; i++) {
             this.menu.select[i].addActionListener(this.menuOptionListener);
         }
+        for (int i = 0; i < 3; i++) {
+            this.menu.gameLevel[i].addActionListener(this.menuOptionListener);
+        }
         while (this.step < 2) {
             for (int i = 0; i < 2; i++) {
                 this.menu.select[i].addActionListener(null);
@@ -210,6 +220,7 @@ public class gameManager extends JPanel {
 }
 
 class gameMenu extends JPanel {
+
     JFrame frame = new JFrame();
     JButton[] select = new JButton[2];
     JLabel instruction = new JLabel();
@@ -218,6 +229,7 @@ class gameMenu extends JPanel {
     Color colorP1 = new Color(150, 150, 255);
     Color buttonColor = new Color(255, 255, 200);
     Color colorP2 = new Color(255, 150, 150);
+    JButton[] gameLevel = new JButton[3];
 
     public gameMenu() {
         this.setLayout(null);
@@ -247,6 +259,13 @@ class gameMenu extends JPanel {
             this.select[i].setBackground(this.buttonColor);
 
             this.add(this.select[i]);
+        }
+        for (int i = 0; i < 3; i++) {
+            this.gameLevel[i] = new JButton();
+            this.gameLevel[i].setSize(50, 50);
+            this.gameLevel[i].setText("%d".formatted(i + 1));
+            this.gameLevel[i].setLocation(200 - 25 * (2 - i) - 50 * (1 - i), 280);
+            this.add(this.gameLevel[i]);
         }
     }
 }
