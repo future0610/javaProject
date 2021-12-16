@@ -1,8 +1,19 @@
 # javaProject
+
+### TicTacToe
+<pre>
+GUI가 구현된 패키지
+</pre>
+
+### testAI
+<pre>
+깊이가 1에서 3인 AI의 성능을 서로 비교하는 패키지
+</pre>
+
 # 1주차
 <pre>
 <ul>
-  <li>Tic-Tac-Toe 게임판 만들기</li>
+  <li>Tic-Tac-Toe 게임 기본 구성 만들기</li>
 </ul>
 </pre>
 
@@ -28,6 +39,7 @@
 <ul>
   <li>alphaNode->maximizing, betaNode->minimizing으로 이름 변경</li>
   <li>AI 구현 완료 - depth에 따라 게임의 난도가 달라짐</li>
+  <li>기존의 GUI 소스코드 삭제 후 새로운 GUI 소스코드 작성</li>
 </ul>
 </pre>
 
@@ -37,14 +49,4 @@
   <li>AI 오류 수정</li>
   <li>GUI 구현 완료</li>
 </ul>
-</pre>
-
-## TicTacToe
-<pre>
-GUI가 구현된 메인 패키지
-</pre>
-
-## testAI
-<pre>
-깊이가 1에서 3인 AI의 성능을 서로 비교하는 패키지
 </pre>
