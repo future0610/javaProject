@@ -21,7 +21,7 @@ GUI가 구현된 패키지
 <pre>
 <ul>
   <li>Swing으로 GUI를 만드는 것을 시도했으나 실패, AI Method 메서드 구현 시작</li>
-  ->게임의 모든 경우의 수를 구하는 작업 구현 시작
+->게임의 모든 경우의 수를 구하는 작업 구현 시작
 </ul>
 </pre>
 
@@ -39,7 +39,7 @@ GUI가 구현된 패키지
 <ul>
   <li>alphaNode->maximizing, betaNode->minimizing으로 이름 변경</li>
   <li>AI 구현 완료 - depth에 따라 게임의 난도가 달라짐</li>
-  <li>기존의 GUI 소스코드 삭제 후 새로운 GUI 소스코드 작성</li>
+  <li>기존의 GUI 소스코드 삭제 후 새로운 GUI 소스코드 작성 시작</li>
 </ul>
 </pre>
 
@@ -48,5 +48,8 @@ GUI가 구현된 패키지
 <ul>
   <li>AI 오류 수정</li>
   <li>GUI 구현 완료</li>
+  <li>실행하면 플레이어와 상대 플레이어를 지정하는 화면이 나옴
+AI의 depth를 1에서 3 중 하나의 값으로 지정하고 기본값은 3이다.
+  </li>
 </ul>
 </pre>
