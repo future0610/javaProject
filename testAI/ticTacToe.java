@@ -40,7 +40,7 @@ public class ticTacToe {
     public ticTacToe(boolean draw, String[][] board) {
         this.drawBoard = draw;
         /*
-        게임 보드를 화면에 표시할 것인지 나타내는 draw(default:true), 현재 보드의 상태인 board를 입력받는다.
+        게임 보드를 화면에 표시할 것인지 나타내는 draw(default: true), 현재 보드의 상태인 board를 입력받는다.
         board로 null을 받으면 모든 칸이 비어있는 보드를 초기 보드 상태로 설정한다.
         String[][] board의 원소로서 X, O가 아닌 값이 있거나,
         O 또는 X의 수가 X 또는 O의 수의 차이가 2 이상일 때 예외를 발생시켜 프로그램을 종효시킨다.
