@@ -2,8 +2,10 @@ package TicTacToe;
 
 public class AI implements Method{
     private String playerPieces;
+    private int depth;
 
-    public AI() {
+    public AI(int depth) {
+        this.depth = depth;
     }
 
     @Override
@@ -13,7 +15,7 @@ public class AI implements Method{
         각 경우에 대한 점수는 Monte Carlo Method를 사용하였다.
         */
         inference inf = new inference(board, this.playerPieces);
-        int[] loc = inf.start();
+        int[] loc = inf.start(this.depth);
         return loc;
     }
 
@@ -23,7 +25,7 @@ public class AI implements Method{
     }
 
     @Override
-    public void display(gameManager manager) {
+    public void setManager(gameManager manager) {
 
     }
 }
