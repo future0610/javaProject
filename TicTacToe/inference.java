@@ -1,4 +1,5 @@
 package TicTacToe;
+
 public class inference {
     private ticTacToe game;
     private String player;
@@ -13,6 +14,10 @@ public class inference {
         maximizing alpha = new maximizing(this.game.getBoard(), this.player);
         alpha.call(depth);
         this.result = alpha.getResult();
+<<<<<<< HEAD
+=======
+       System.out.println("%d %d".formatted(this.result[0], this.result[1]));
+>>>>>>> 0dfc23fbf17ed22d0c63ded32b2f5442242b829c
         return this.result;
     }
 }
@@ -292,4 +297,9 @@ class minimizing extends node implements generalNode {
     public int getNodeScore() {
         return nodeScore;
     }
+<<<<<<< HEAD
 }
+=======
+>>>>>>> 3dcd6f71401cf21ce45bf5747609c2a6f33ded2b
+}
+>>>>>>> 0dfc23fbf17ed22d0c63ded32b2f5442242b829c

@@ -7,7 +7,7 @@
 </pre>
 
 # 2주차
-<pre>< /pre>
+<pre>
 <ul>
   <li>Swing으로 GUI를 만드는 것을 시도했으나 실패, AI Method 메서드 구현 시작</li>
   ->게임의 모든 경우의 수를 구하는 작업 구현 시작
@@ -27,6 +27,6 @@
 <pre>
 <ul>
   <li>alphaNode->maximizing, betaNode->minimizing으로 이름 변경</li>
-  <li>AI 구현 완료</li>
+  <li>AI 구현 완료 - depth에 따라 게임의 난도가 달라짐</li>
 </ul>
 </pre>
