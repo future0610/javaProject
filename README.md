@@ -38,3 +38,13 @@
   <li>GUI 구현 완료</li>
 </ul>
 </pre>
+
+## TicTacToe
+<pre>
+GUI가 구현된 메인 패키지
+</pre>
+
+## testAI
+<pre>
+깊이가 1에서 3인 AI의 성능을 서로 비교하는 패키지
+</pre>
