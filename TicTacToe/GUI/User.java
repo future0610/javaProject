@@ -35,6 +35,7 @@ public class User implements Method {
                 this.manager.boardBtn[i][j].removeActionListener(this.manager.gameActionListener);
             }
         }
+        System.out.println(this.toString());
         return this.manager.humanLoc;
 //        return null;
         /**

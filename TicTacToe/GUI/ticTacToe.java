@@ -224,11 +224,17 @@ public class ticTacToe {
 
         this.currentPlayer.setManager(this.manager);
         this.currentPlayer.setPlayer(this.currentPieces);
+        System.out.println(this.currentPlayer);
         loc = this.currentPlayer.method(this.board);
+        System.out.print(loc[0]);
+        System.out.println(loc[1]);
         if (loc[0] == 4 || loc[1] == 4) {
             return this.winner;
         }
         this.action(loc);
+        System.out.println(this.currentPlayer);
+        System.out.println();
+//        System.out.println(this.currentPieces);
         this.switchTurn();
         this.manager.renewal(this.board);
         this.winner = this.evaluate();
@@ -332,9 +338,18 @@ public class ticTacToe {
         /*
          게임판과 순서를 초기화시키는 메서드
          */
+        try {
+            System.out.println(this.currentPlayer);
+        }
+        catch (Exception e) {
+
+        }
         this.board = ticTacToe.copyBoard(this.initialBoard);
         if (this.currentPieces == null) {
             this.currentPieces = this.nextPlayer();
+            System.out.println();
+            System.out.print("next:");
+            System.out.println(this.currentPlayer);
         }
     }
 

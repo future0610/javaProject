@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 public class gameManager extends JPanel {
     Method user1;
     Method user2;
-    int step = 0;
     int reInitialize = 2;
     int[] humanLoc = {-1, -1};
     ticTacToe game = new ticTacToe();
@@ -33,33 +32,44 @@ public class gameManager extends JPanel {
                 }
             }
             if (e.getSource() == gameManager.this.menu.select[0]) {
-                gameManager.this.step++;
-                if (gameManager.this.step == 1) {
+                if (gameManager.this.user1 == null) {
                     gameManager.this.menu.instruction.setText("Choose Player2");
                     gameManager.this.menu.instruction.setBackground(gameManager.this.menu.colorP2);
                     gameManager.this.user1 = new AI(this.ai);
                 }
-                if (gameManager.this.step == 2) {
+                else if (gameManager.this.user1 != null && gameManager.this.user2 == null) {
                     gameManager.this.user2 = new AI(this.ai);
                 }
             }
             if (e.getSource() == gameManager.this.menu.select[1]) {
-                gameManager.this.step++;
-                if (gameManager.this.step == 1) {
+                if (gameManager.this.user1 == null) {
                     gameManager.this.menu.instruction.setText("Choose Player2");
                     gameManager.this.menu.instruction.setBackground(gameManager.this.menu.colorP2);
                     gameManager.this.user1 = new User();
                 }
-                if (gameManager.this.step == 2) {
+                else if (gameManager.this.user1 != null && gameManager.this.user2 == null) {
                     gameManager.this.user2 = new User();
                 }
             }
+//            try {
+//                System.out.println(gameManager.this.user1);
+//                System.out.println(gameManager.this.user2);
+//            }
+//            catch (Exception b) {
+//                try {
+//                    System.out.println(gameManager.this.user1);
+//                    System.out.println(gameManager.this.user2);
+//                }
+//                catch (Exception a) {
+//
+//                }
+//            }
         }
     };
 
     final ActionListener gameActionListener = new ActionListener() {
         @Override
-        public void actionPerformed(ActionEvent e) {//            System.out.println(gameManager.this.step);
+        public void actionPerformed(ActionEvent e) {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     if (e.getSource() == gameManager.this.boardBtn[i][j]) {
@@ -71,6 +81,7 @@ public class gameManager extends JPanel {
 
             if (e.getSource() == gameManager.this.reGameBtn) {
                 gameManager.this.game.restart(0);
+                gameManager.this.reGameBtn.removeActionListener(this);
                 gameManager.this.renewal(gameManager.this.game.getBoard());
             }
             if (e.getSource() == gameManager.this.goMenuBtn) {
@@ -166,10 +177,21 @@ public class gameManager extends JPanel {
             this.menu.gameLevel[i].addActionListener(this.menuOptionListener);
         }
 
-        while (this.step < 2) {
+        while (this.user1 == null || this.user2 == null) {
             for (int i = 0; i < 2; i++) {
                 this.menu.select[i].addActionListener(null);
             }
+//            try {
+//                System.out.println(this.user1);
+//            }
+//            catch (Exception e) {
+//                try {
+//                    System.out.println(this.user2);
+//                }
+//                catch (Exception a) {
+//
+//                }
+//            }
         }
 
         return this.start();
@@ -225,7 +247,6 @@ public class gameManager extends JPanel {
     }
 
     void die() {
-        this.step = 0;
         this.reInitialize = 2;
         this.menu = new gameMenu();
 
