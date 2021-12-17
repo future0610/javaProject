@@ -1,6 +1,6 @@
-package TicTacToe;
+package TicTacToe.GUI;
 
-public class AI implements Method{
+public class AI implements Method {
     private String playerPieces;
     private int depth;
 

@@ -1,4 +1,4 @@
-package TicTacToe;
+package TicTacToe.GUI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ public class ticTacToe {
     private Method player2;
     private Method currentPlayer;
     private String currentPieces;
+    String winner = null;
 
     private gameManager manager;
 
@@ -224,10 +225,14 @@ public class ticTacToe {
         this.currentPlayer.setManager(this.manager);
         this.currentPlayer.setPlayer(this.currentPieces);
         loc = this.currentPlayer.method(this.board);
+        if (loc[0] == 4 || loc[1] == 4) {
+            return this.winner;
+        }
         this.action(loc);
         this.switchTurn();
         this.manager.renewal(this.board);
-        String winner = this.evaluate();
+        this.winner = this.evaluate();
+        return this.winner;
         /*
         **Console창에서 실행할 경우**
         System.out.printf("현재 플레이어: %s\n", this.currentPieces);
@@ -254,7 +259,6 @@ public class ticTacToe {
         }
         this.draw();
         */
-        return winner;
     }
 
 
@@ -323,7 +327,7 @@ public class ticTacToe {
             this.currentPlayer = this.player2;
         }
     }
-    
+
     public void reset() {
         /*
          게임판과 순서를 초기화시키는 메서드
@@ -333,7 +337,7 @@ public class ticTacToe {
             this.currentPieces = this.nextPlayer();
         }
     }
-    
+
     private String nextPlayer(){
         /*
         게임 상태에 따라 순서를 정해주는 메서드

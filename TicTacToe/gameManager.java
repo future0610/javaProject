@@ -1,4 +1,4 @@
-package TicTacToe;
+package TicTacToe.GUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +9,7 @@ public class gameManager extends JPanel {
     Method user1;
     Method user2;
     int step = 0;
+    int reInitialize = 2;
     int[] humanLoc = {-1, -1};
     ticTacToe game = new ticTacToe();
 
@@ -20,9 +21,10 @@ public class gameManager extends JPanel {
     JFrame frame = new JFrame();
     JButton[][] boardBtn = new JButton[3][3];
     JButton reGameBtn = new JButton();
-    ActionListener menuOptionListener = new ActionListener() {
+    JButton goMenuBtn = new JButton();
+
+    final ActionListener menuOptionListener = new ActionListener() {
         int ai = 3;
-        int step = 0;
         @Override
         public void actionPerformed(ActionEvent e) {
             for (int i = 0; i < 3; i++) {
@@ -55,9 +57,9 @@ public class gameManager extends JPanel {
         }
     };
 
-    ActionListener gameActionListener = new ActionListener() {
+    final ActionListener gameActionListener = new ActionListener() {
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent e) {//            System.out.println(gameManager.this.step);
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     if (e.getSource() == gameManager.this.boardBtn[i][j]) {
@@ -70,6 +72,14 @@ public class gameManager extends JPanel {
             if (e.getSource() == gameManager.this.reGameBtn) {
                 gameManager.this.game.restart(0);
                 gameManager.this.renewal(gameManager.this.game.getBoard());
+            }
+            if (e.getSource() == gameManager.this.goMenuBtn) {
+                if (gameManager.this.reInitialize != 0) {
+                    gameManager.this.reInitialize = JOptionPane.showConfirmDialog(null, "다시 시작하겠습니까?", null, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+            if (gameManager.this.reInitialize == 0) {
+                gameManager.this.goMenuBtn.removeActionListener(this);
             }
         }
     };
@@ -108,9 +118,17 @@ public class gameManager extends JPanel {
         this.reGameBtn.setText("restart?");
         this.reGameBtn.setEnabled(true);
         this.reGameBtn.setSize(150, 50);
-        this.reGameBtn.setLocation(200 - 75, 350);
+        this.reGameBtn.setLocation(400 - (200 - 75 - 90) - 150, 350);
         this.reGameBtn.addActionListener(this.gameActionListener);
+        this.reGameBtn.addActionListener(null);
         this.add(this.reGameBtn);
+
+        this.goMenuBtn.setText("Menu");
+        this.goMenuBtn.setEnabled(true);
+        this.goMenuBtn.setSize(150, 50);
+        this.goMenuBtn.setLocation(200 - 75 - 90, 350);
+        this.goMenuBtn.addActionListener(this.gameActionListener);
+        this.add(this.goMenuBtn);
 
         this.update();
     }
@@ -139,23 +157,26 @@ public class gameManager extends JPanel {
     public int menuOpen() {
         this.frame.add(this.menu);
         this.frame.revalidate();
+
         for (int i = 0; i < 2; i++) {
             this.menu.select[i].addActionListener(this.menuOptionListener);
         }
+
         for (int i = 0; i < 3; i++) {
             this.menu.gameLevel[i].addActionListener(this.menuOptionListener);
         }
+
         while (this.step < 2) {
             for (int i = 0; i < 2; i++) {
                 this.menu.select[i].addActionListener(null);
             }
         }
+
         return this.start();
     }
 
     public int start() {
         this.frame.remove(this.menu);
-        this.update();
         this.frame.add(this);
         return this.runGame();
     }
@@ -170,6 +191,9 @@ public class gameManager extends JPanel {
             String winner = null;
             while (winner == null) {
                 winner = this.game.run();
+                if (this.reInitialize == 0) {
+                    return 1;
+                }
             }
             if (winner.equals(ticTacToe.DRAW)) {
                 JOptionPane.showMessageDialog(null, "무승부입니다!");
@@ -185,6 +209,7 @@ public class gameManager extends JPanel {
                 this.game.readyGame();
             }
         }
+
         return result;
     }
 
@@ -201,14 +226,20 @@ public class gameManager extends JPanel {
 
     void die() {
         this.step = 0;
+        this.reInitialize = 2;
         this.menu = new gameMenu();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 this.remove(this.boardBtn[i][j]);
+                this.boardBtn[i][j].removeActionListener(this.gameActionListener);
             }
         }
         this.remove(this.reGameBtn);
+        this.remove(this.goMenuBtn);
+
+        this.reGameBtn.removeActionListener(this.menuOptionListener);
+        this.goMenuBtn.removeActionListener(this.menuOptionListener);
 
         this.user1 = null;
         this.user2 = null;

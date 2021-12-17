@@ -1,4 +1,4 @@
-package TicTacToe;
+package TicTacToe.GUI;
 
 public interface Method {
     /*

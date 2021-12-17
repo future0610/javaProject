@@ -1,4 +1,4 @@
-package TicTacToe;
+package TicTacToe.GUI;
 
 public class inference {
     private ticTacToe game;
