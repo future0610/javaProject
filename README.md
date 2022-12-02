@@ -3,7 +3,7 @@
 ### TicTacToe
 <pre>
 GUI: GUI가 구현된 패키지 (미완성)
-Console: 터미널에서 실행 (완성)
+Terminal: 터미널에서 실행 (완성)
 </pre>
 
 ### testAI
