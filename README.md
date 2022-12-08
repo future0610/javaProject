@@ -6,7 +6,7 @@ GUI: GUI가 구현된 패키지 (미완성)
 Terminal: 터미널에서 실행 (완성)
 </pre>
 
-### testAI
+### AITest
 <pre>
 깊이가 1에서 3인 AI의 성능을 서로 비교하는 패키지
 </pre>
