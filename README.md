@@ -59,3 +59,21 @@ AI의 depth를 1에서 3 중 하나의 값으로 지정하고 기본값은 3이�
   </li>
 </ul>
 </pre>
+
+# Docker
+<pre>
+  도커 이미지 빌드
+  ```docker
+  docker build -t [이미지 이름] .</li>
+  ```
+
+  도커 컨테이너 생성
+  ```docker
+  docker run -itd -v [호스트 디렉토리]:[컨테이너 디렉토리] --name [컨테이너 이름] [이미지 이름]
+  ```
+
+  도커 컨테이너 접속
+  ```docker
+  docker exec -it [컨테이너 이름] /bin/bash
+  ```
+</pre>
